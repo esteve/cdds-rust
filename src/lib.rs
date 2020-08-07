@@ -1,6 +1,7 @@
 extern crate libc;
 use std::ffi::CString;
 use std::os::raw::c_char;
+use std::time::Duration;
 
 extern crate libddsc_sys;
 
@@ -14,6 +15,11 @@ pub enum Durability {
     TransientLocal,
     Transient,
     Persistent,
+}
+
+pub enum Reliability {
+    BestEffort,
+    Reliable,
 }
 
 pub struct QoS {
@@ -31,8 +37,8 @@ impl QoS {
         unsafe { libddsc_sys::dds_qos_reset(self.qos) }
     }
 
-    pub fn history(&mut self, h: &History) {
-        match h {
+    pub fn history(&mut self, history: &History) -> &mut Self {
+        match history {
             History::KeepLast { n } => unsafe {
                 libddsc_sys::dds_qset_history(
                     self.qos,
@@ -48,6 +54,57 @@ impl QoS {
                 )
             },
         }
+        self
+    }
+
+    pub fn durability(&mut self, durability: &Durability) -> &mut Self {
+        match durability {
+            Durability::Volatile => unsafe {
+                libddsc_sys::dds_qset_durability(
+                    self.qos,
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_VOLATILE
+                )
+            },
+            Durability::TransientLocal => unsafe {
+                libddsc_sys::dds_qset_durability(
+                    self.qos,
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT_LOCAL
+                )
+            },
+            Durability::Transient => unsafe {
+                libddsc_sys::dds_qset_durability(
+                    self.qos,
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT
+                )
+            },
+            Durability::Persistent => unsafe {
+                libddsc_sys::dds_qset_durability(
+                    self.qos,
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_PERSISTENT
+                )
+            },
+        }
+        self
+    }
+
+    pub fn reliability(&mut self, reliability: &Reliability, duration: &Duration) -> &mut Self {
+        match reliability {
+            Reliability::BestEffort => unsafe {
+                libddsc_sys::dds_qset_reliability(
+                    self.qos,
+                    libddsc_sys::dds_reliability_kind_DDS_RELIABILITY_BEST_EFFORT,
+                    duration.as_nanos() as i64,
+                )
+            },
+            Reliability::Reliable => unsafe {
+                libddsc_sys::dds_qset_reliability(
+                    self.qos,
+                    libddsc_sys::dds_reliability_kind_DDS_RELIABILITY_RELIABLE,
+                    duration.as_nanos() as i64,
+                )
+            },
+        }
+        self
     }
 
     pub fn partitions(&mut self, ps: &[String]) {
@@ -107,4 +164,31 @@ impl Participant {
             unsafe { libddsc_sys::dds_create_participant(d, std::ptr::null(), std::ptr::null()) };
         Participant { entity: e }
     }
+
+    pub fn create_publisher(&self, qos: &QoS) -> Publisher {
+        let e = unsafe { libddsc_sys::dds_create_publisher(self.entity, qos.qos, std::ptr::null()) };
+        Publisher { entity: e }
+    }
+
+    pub fn create_writer(&self, topic: &Topic, qos: &QoS) -> Writer {
+        let e = unsafe { libddsc_sys::dds_create_writer(self.entity, topic.entity, qos.qos, std::ptr::null()) };
+        Writer { entity: e }
+    }
+
+    pub fn create_topic(&self, name: &str, qos: &QoS) -> Topic {
+        let e = unsafe { libddsc_sys::dds_create_topic(self.entity, std::ptr::null(), CString::new(name).unwrap().as_ptr(), std::ptr::null(), std::ptr::null()) };
+        Topic { entity: e }
+    }
+}
+
+pub struct Publisher {
+    entity: libddsc_sys::dds_entity_t,
+}
+
+pub struct Writer {
+    entity: libddsc_sys::dds_entity_t,
+}
+
+pub struct Topic {
+    entity: libddsc_sys::dds_entity_t,
 }

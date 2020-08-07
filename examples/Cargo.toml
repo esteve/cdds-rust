@@ -8,6 +8,3 @@ edition = "2018"
 [dev-dependencies]
 ddsc = { path = ".." }
 
-[[example]]
-name = "pub"
-path = "pub.rs"
