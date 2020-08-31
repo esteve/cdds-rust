@@ -197,7 +197,6 @@ impl Participant {
 
     pub fn create_topic_generic(
         &self,
-        name: &str,
         sertopic: *mut *mut libddsc_sys::ddsi_sertopic,
         qos: &QoS,
     ) -> Topic {
@@ -230,7 +229,6 @@ impl Writer {
     pub fn get_status_changes(&self) -> (libddsc_sys::dds_return_t, u32) {
         let mut status: u32 = 0;
         let status_ptr: *mut u32 = &mut status;
-        // let status_ptr: *mut u32 = &status;
         let rc: libddsc_sys::dds_return_t =
             unsafe { libddsc_sys::dds_get_status_changes(self.entity, status_ptr) };
         (rc, status)

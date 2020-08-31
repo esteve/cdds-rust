@@ -8,7 +8,7 @@ fn main() {
 
     let mut sertopic: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
     let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
-    let topic = participant.create_topic_generic("hello", sertopic_ptr, &qos);
+    let topic = participant.create_topic_generic(sertopic_ptr, &qos);
 
     let writer: Writer = participant.create_writer(&topic, &qos);
 
