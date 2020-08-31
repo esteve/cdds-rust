@@ -62,32 +62,36 @@ impl QoS {
             Durability::Volatile => unsafe {
                 libddsc_sys::dds_qset_durability(
                     self.qos,
-                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_VOLATILE
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_VOLATILE,
                 )
             },
             Durability::TransientLocal => unsafe {
                 libddsc_sys::dds_qset_durability(
                     self.qos,
-                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT_LOCAL
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT_LOCAL,
                 )
             },
             Durability::Transient => unsafe {
                 libddsc_sys::dds_qset_durability(
                     self.qos,
-                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT,
                 )
             },
             Durability::Persistent => unsafe {
                 libddsc_sys::dds_qset_durability(
                     self.qos,
-                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_PERSISTENT
+                    libddsc_sys::dds_durability_kind_DDS_DURABILITY_PERSISTENT,
                 )
             },
         }
         self
     }
 
-    pub fn reliability<'a>(&'a mut self, reliability: &Reliability, duration: &Duration) -> &'a mut Self {
+    pub fn reliability<'a>(
+        &'a mut self,
+        reliability: &Reliability,
+        duration: &Duration,
+    ) -> &'a mut Self {
         match reliability {
             Reliability::BestEffort => unsafe {
                 libddsc_sys::dds_qset_reliability(
@@ -166,22 +170,46 @@ impl Participant {
     }
 
     pub fn create_publisher(&self, qos: &QoS) -> Publisher {
-        let e = unsafe { libddsc_sys::dds_create_publisher(self.entity, qos.qos, std::ptr::null()) };
+        let e =
+            unsafe { libddsc_sys::dds_create_publisher(self.entity, qos.qos, std::ptr::null()) };
         Publisher { entity: e }
     }
 
     pub fn create_writer(&self, topic: &Topic, qos: &QoS) -> Writer {
-        let e = unsafe { libddsc_sys::dds_create_writer(self.entity, topic.entity, qos.qos, std::ptr::null()) };
+        let e = unsafe {
+            libddsc_sys::dds_create_writer(self.entity, topic.entity, qos.qos, std::ptr::null())
+        };
         Writer { entity: e }
     }
 
     pub fn create_topic(&self, name: &str, qos: &QoS) -> Topic {
-        let e = unsafe { libddsc_sys::dds_create_topic(self.entity, std::ptr::null(), CString::new(name).unwrap().as_ptr(), std::ptr::null(), std::ptr::null()) };
+        let e = unsafe {
+            libddsc_sys::dds_create_topic(
+                self.entity,
+                std::ptr::null(),
+                CString::new(name).unwrap().as_ptr(),
+                std::ptr::null(),
+                std::ptr::null(),
+            )
+        };
         Topic { entity: e }
     }
 
-    pub fn create_topic_generic(&self, name: &str, sertopic: *mut *mut libddsc_sys::ddsi_sertopic, qos: &QoS) -> Topic {
-        let e = unsafe { libddsc_sys::dds_create_topic_generic(self.entity, sertopic, qos.qos, std::ptr::null(), std::ptr::null()) };
+    pub fn create_topic_generic(
+        &self,
+        name: &str,
+        sertopic: *mut *mut libddsc_sys::ddsi_sertopic,
+        qos: &QoS,
+    ) -> Topic {
+        let e = unsafe {
+            libddsc_sys::dds_create_topic_generic(
+                self.entity,
+                sertopic,
+                qos.qos,
+                std::ptr::null(),
+                std::ptr::null(),
+            )
+        };
         Topic { entity: e }
     }
 }
@@ -195,18 +223,26 @@ pub struct Writer {
 }
 
 impl Writer {
-    pub fn set_status_mask(&self, mask: u32) -> () {
-        unsafe { libddsc_sys::dds_set_status_mask(self.entity, mask); }
+    pub fn set_status_mask(&self, mask: u32) -> libddsc_sys::dds_return_t {
+        unsafe { libddsc_sys::dds_set_status_mask(self.entity, mask) }
     }
 
-    pub fn get_status_changes(&self) -> u32 {
+    pub fn get_status_changes(&self) -> (libddsc_sys::dds_return_t, u32) {
         let mut status: u32 = 0;
         let status_ptr: *mut u32 = &mut status;
         // let status_ptr: *mut u32 = &status;
-        unsafe { libddsc_sys::dds_get_status_changes(self.entity, status_ptr); }
-        status
+        let rc: libddsc_sys::dds_return_t =
+            unsafe { libddsc_sys::dds_get_status_changes(self.entity, status_ptr) };
+        (rc, status)
     }
 }
 pub struct Topic {
     entity: libddsc_sys::dds_entity_t,
+}
+
+pub fn sleep_for(duration: Duration) {
+    let nanos = duration.as_nanos() as i64;
+    unsafe {
+        libddsc_sys::dds_sleepfor(nanos);
+    }
 }

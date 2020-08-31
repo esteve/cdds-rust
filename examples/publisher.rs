@@ -1,4 +1,5 @@
 use dds::*;
+use std::time::Duration;
 
 fn main() {
     let participant = Participant::new(0);
@@ -13,9 +14,9 @@ fn main() {
 
     writer.set_status_mask(libddsc_sys::dds_status_id_DDS_PUBLICATION_MATCHED_STATUS_ID);
 
-    let mut status: u32 = 0;
-    while(0 != (status & libddsc_sys::dds_status_id_DDS_PUBLICATION_MATCHED_STATUS_ID))
-    {
-        writer.get_status_changes();
+    let status: u32 = 0;
+    while (0 != (status & libddsc_sys::dds_status_id_DDS_PUBLICATION_MATCHED_STATUS_ID)) {
+        let (rc, status) = writer.get_status_changes();
+        sleep_for(Duration::from_millis(20));
     }
 }
