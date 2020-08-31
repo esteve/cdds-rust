@@ -37,7 +37,7 @@ impl QoS {
         unsafe { libddsc_sys::dds_qos_reset(self.qos) }
     }
 
-    pub fn history(&mut self, history: &History) -> &mut Self {
+    pub fn history<'a>(&'a mut self, history: &History) -> &'a mut Self {
         match history {
             History::KeepLast { n } => unsafe {
                 libddsc_sys::dds_qset_history(
@@ -57,7 +57,7 @@ impl QoS {
         self
     }
 
-    pub fn durability(&mut self, durability: &Durability) -> &mut Self {
+    pub fn durability<'a>(&'a mut self, durability: &Durability) -> &'a mut Self {
         match durability {
             Durability::Volatile => unsafe {
                 libddsc_sys::dds_qset_durability(
@@ -87,7 +87,7 @@ impl QoS {
         self
     }
 
-    pub fn reliability(&mut self, reliability: &Reliability, duration: &Duration) -> &mut Self {
+    pub fn reliability<'a>(&'a mut self, reliability: &Reliability, duration: &Duration) -> &'a mut Self {
         match reliability {
             Reliability::BestEffort => unsafe {
                 libddsc_sys::dds_qset_reliability(
@@ -179,6 +179,11 @@ impl Participant {
         let e = unsafe { libddsc_sys::dds_create_topic(self.entity, std::ptr::null(), CString::new(name).unwrap().as_ptr(), std::ptr::null(), std::ptr::null()) };
         Topic { entity: e }
     }
+
+    pub fn create_topic_generic(&self, name: &str, sertopic: *mut *mut libddsc_sys::ddsi_sertopic, qos: &QoS) -> Topic {
+        let e = unsafe { libddsc_sys::dds_create_topic_generic(self.entity, sertopic, qos.qos, std::ptr::null(), std::ptr::null()) };
+        Topic { entity: e }
+    }
 }
 
 pub struct Publisher {
@@ -189,6 +194,19 @@ pub struct Writer {
     entity: libddsc_sys::dds_entity_t,
 }
 
+impl Writer {
+    pub fn set_status_mask(&self, mask: u32) -> () {
+        unsafe { libddsc_sys::dds_set_status_mask(self.entity, mask); }
+    }
+
+    pub fn get_status_changes(&self) -> u32 {
+        let mut status: u32 = 0;
+        let status_ptr: *mut u32 = &mut status;
+        // let status_ptr: *mut u32 = &status;
+        unsafe { libddsc_sys::dds_get_status_changes(self.entity, status_ptr); }
+        status
+    }
+}
 pub struct Topic {
     entity: libddsc_sys::dds_entity_t,
 }
