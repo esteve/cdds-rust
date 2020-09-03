@@ -5,6 +5,8 @@ use std::time::Duration;
 
 extern crate libddsc_sys;
 
+pub const DDS_DOMAIN_DEFAULT: u32 = 0xffffffffu32;
+
 pub enum History {
     KeepLast { n: u32 },
     KeepAll,
@@ -270,7 +272,12 @@ impl Writer {
             unsafe { libddsc_sys::dds_get_status_changes(self.entity, status_ptr) };
         (rc, status)
     }
+
+    pub fn write_cdr(&self) -> libddsc_sys::dds_return_t {
+        unsafe { libddsc_sys::dds_writecdr(self.entity, std::ptr::null_mut()) }
+    }
 }
+
 pub struct Topic {
     entity: libddsc_sys::dds_entity_t,
 }
