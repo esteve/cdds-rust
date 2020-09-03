@@ -6,46 +6,45 @@ fn main() {
     let topic = participant.create_topic();
 
     let qos = QoS::new();
-    dds_qset_reliability (qos, DDS_RELIABILITY_RELIABLE, DDS_SECS (10));
+    dds_qset_reliability(qos, DDS_RELIABILITY_RELIABLE, DDS_SECS(10));
 
     let reader = participant.create_reader(topic, qos, std::ptr::null());
 
     qos.delete();
 
-//   samples[0] = HelloWorldData_Msg__alloc ();
+    //   samples[0] = HelloWorldData_Msg__alloc ();
 
-//   /* Poll until data has been read. */
-//   while (true)
-//   {
-//     /* Do the actual read.
-//      * The return value contains the number of read samples. */
-//     rc = dds_read (reader, samples, infos, MAX_SAMPLES, MAX_SAMPLES);
-//     if (rc < 0)
-//       DDS_FATAL("dds_read: %s\n", dds_strretcode(-rc));
+    //   /* Poll until data has been read. */
+    //   while (true)
+    //   {
+    //     /* Do the actual read.
+    //      * The return value contains the number of read samples. */
+    //     rc = dds_read (reader, samples, infos, MAX_SAMPLES, MAX_SAMPLES);
+    //     if (rc < 0)
+    //       DDS_FATAL("dds_read: %s\n", dds_strretcode(-rc));
 
-//     /* Check if we read some data and it is valid. */
-//     if ((rc > 0) && (infos[0].valid_data))
-//     {
-//       /* Print Message. */
-//       msg = (HelloWorldData_Msg*) samples[0];
-//       printf ("=== [Subscriber] Received : ");
-//       printf ("Message (%"PRId32", %s)\n", msg->userID, msg->message);
-//       fflush (stdout);
-//       break;
-//     }
-//     else
-//     {
-//       /* Polling sleep. */
-//       dds_sleepfor (DDS_MSECS (20));
-//     }
-//   }
+    //     /* Check if we read some data and it is valid. */
+    //     if ((rc > 0) && (infos[0].valid_data))
+    //     {
+    //       /* Print Message. */
+    //       msg = (HelloWorldData_Msg*) samples[0];
+    //       printf ("=== [Subscriber] Received : ");
+    //       printf ("Message (%"PRId32", %s)\n", msg->userID, msg->message);
+    //       fflush (stdout);
+    //       break;
+    //     }
+    //     else
+    //     {
+    //       /* Polling sleep. */
+    //       dds_sleepfor (DDS_MSECS (20));
+    //     }
+    //   }
 
-//   /* Free the data location. */
-//   HelloWorldData_Msg_free (samples[0], DDS_FREE_ALL);
+    //   /* Free the data location. */
+    //   HelloWorldData_Msg_free (samples[0], DDS_FREE_ALL);
 
-//   /* Deleting the participant will delete all its children recursively as well. */
-//   rc = dds_delete (participant);
-
+    //   /* Deleting the participant will delete all its children recursively as well. */
+    //   rc = dds_delete (participant);
 }
 
 // #include "dds/dds.h"

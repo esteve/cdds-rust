@@ -19,7 +19,6 @@ impl From<History> for libddsc_sys::dds_history_kind_t {
             History::KeepAll => libddsc_sys::dds_history_kind_DDS_HISTORY_KEEP_ALL,
         }
     }
-
 }
 
 pub enum Durability {
@@ -33,7 +32,9 @@ impl From<Durability> for libddsc_sys::dds_durability_kind_t {
     fn from(durability: Durability) -> Self {
         match durability {
             Durability::Volatile => libddsc_sys::dds_durability_kind_DDS_DURABILITY_VOLATILE,
-            Durability::TransientLocal => libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT_LOCAL,
+            Durability::TransientLocal => {
+                libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT_LOCAL
+            }
             Durability::Transient => libddsc_sys::dds_durability_kind_DDS_DURABILITY_TRANSIENT,
             Durability::Persistent => libddsc_sys::dds_durability_kind_DDS_DURABILITY_PERSISTENT,
         }
@@ -48,7 +49,9 @@ pub enum Reliability {
 impl From<Reliability> for libddsc_sys::dds_reliability_kind_t {
     fn from(reliability: Reliability) -> Self {
         match reliability {
-            Reliability::BestEffort => libddsc_sys::dds_reliability_kind_DDS_RELIABILITY_BEST_EFFORT,
+            Reliability::BestEffort => {
+                libddsc_sys::dds_reliability_kind_DDS_RELIABILITY_BEST_EFFORT
+            }
             Reliability::Reliable => libddsc_sys::dds_reliability_kind_DDS_RELIABILITY_RELIABLE,
         }
     }
@@ -73,19 +76,35 @@ pub enum DDSStatusId {
 impl From<DDSStatusId> for libddsc_sys::dds_status_id_t {
     fn from(dds_status_id: DDSStatusId) -> Self {
         match dds_status_id {
-            DDSStatusId::InconsistentTopic => libddsc_sys::dds_status_id_DDS_INCONSISTENT_TOPIC_STATUS_ID,
-            DDSStatusId::OfferedDeadlineMissed => libddsc_sys::dds_status_id_DDS_OFFERED_DEADLINE_MISSED_STATUS_ID,
-            DDSStatusId::RequestedDeadlineMissed => libddsc_sys::dds_status_id_DDS_REQUESTED_DEADLINE_MISSED_STATUS_ID,
-            DDSStatusId::OfferedIncompatibleQos => libddsc_sys::dds_status_id_DDS_OFFERED_INCOMPATIBLE_QOS_STATUS_ID,
-            DDSStatusId::RequestedIncompatibleQos => libddsc_sys::dds_status_id_DDS_REQUESTED_INCOMPATIBLE_QOS_STATUS_ID,
+            DDSStatusId::InconsistentTopic => {
+                libddsc_sys::dds_status_id_DDS_INCONSISTENT_TOPIC_STATUS_ID
+            }
+            DDSStatusId::OfferedDeadlineMissed => {
+                libddsc_sys::dds_status_id_DDS_OFFERED_DEADLINE_MISSED_STATUS_ID
+            }
+            DDSStatusId::RequestedDeadlineMissed => {
+                libddsc_sys::dds_status_id_DDS_REQUESTED_DEADLINE_MISSED_STATUS_ID
+            }
+            DDSStatusId::OfferedIncompatibleQos => {
+                libddsc_sys::dds_status_id_DDS_OFFERED_INCOMPATIBLE_QOS_STATUS_ID
+            }
+            DDSStatusId::RequestedIncompatibleQos => {
+                libddsc_sys::dds_status_id_DDS_REQUESTED_INCOMPATIBLE_QOS_STATUS_ID
+            }
             DDSStatusId::SampleLost => libddsc_sys::dds_status_id_DDS_SAMPLE_LOST_STATUS_ID,
             DDSStatusId::SampleRejected => libddsc_sys::dds_status_id_DDS_SAMPLE_REJECTED_STATUS_ID,
             DDSStatusId::DataOnReaders => libddsc_sys::dds_status_id_DDS_DATA_ON_READERS_STATUS_ID,
             DDSStatusId::DataAvailable => libddsc_sys::dds_status_id_DDS_DATA_AVAILABLE_STATUS_ID,
             DDSStatusId::LivelinessLost => libddsc_sys::dds_status_id_DDS_LIVELINESS_LOST_STATUS_ID,
-            DDSStatusId::LivelinessChanged => libddsc_sys::dds_status_id_DDS_LIVELINESS_CHANGED_STATUS_ID,
-            DDSStatusId::PublicationMatched => libddsc_sys::dds_status_id_DDS_PUBLICATION_MATCHED_STATUS_ID,
-            DDSStatusId::SubscriptionMatched => libddsc_sys::dds_status_id_DDS_SUBSCRIPTION_MATCHED_STATUS_ID,
+            DDSStatusId::LivelinessChanged => {
+                libddsc_sys::dds_status_id_DDS_LIVELINESS_CHANGED_STATUS_ID
+            }
+            DDSStatusId::PublicationMatched => {
+                libddsc_sys::dds_status_id_DDS_PUBLICATION_MATCHED_STATUS_ID
+            }
+            DDSStatusId::SubscriptionMatched => {
+                libddsc_sys::dds_status_id_DDS_SUBSCRIPTION_MATCHED_STATUS_ID
+            }
         }
     }
 }
@@ -108,30 +127,17 @@ impl QoS {
     pub fn history<'a>(&'a mut self, history: History) -> &'a mut Self {
         match history {
             History::KeepLast { n } => unsafe {
-                libddsc_sys::dds_qset_history(
-                    self.qos,
-                    history.into(),
-                    n as i32,
-                )
+                libddsc_sys::dds_qset_history(self.qos, history.into(), n as i32)
             },
             History::KeepAll => unsafe {
-                libddsc_sys::dds_qset_history(
-                    self.qos,
-                    history.into(),
-                    0,
-                )
+                libddsc_sys::dds_qset_history(self.qos, history.into(), 0)
             },
         }
         self
     }
 
     pub fn durability<'a>(&'a mut self, durability: Durability) -> &'a mut Self {
-        unsafe {
-            libddsc_sys::dds_qset_durability(
-                self.qos,
-                durability.into(),
-            )
-        }
+        unsafe { libddsc_sys::dds_qset_durability(self.qos, durability.into()) }
         self
     }
 
