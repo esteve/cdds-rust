@@ -22,6 +22,22 @@ pub enum Reliability {
     Reliable,
 }
 
+pub enum DDSStatusId {
+    InconsistentTopic = 0,
+    OfferedDeadlineMissed = 1,
+    RequestedDeadlineMissed = 2,
+    OfferedIncompatibleQos = 3,
+    RequestedIncompatibleQos = 4,
+    SampleLost = 5,
+    SampleRejected = 6,
+    DataOnReaders = 7,
+    DataAvailable = 8,
+    LivelinessLost = 9,
+    LivelinessChanged = 10,
+    PublicationMatched = 11,
+    SubscriptionMatched = 12,
+}
+
 pub struct QoS {
     qos: *mut libddsc_sys::dds_qos_t,
 }
@@ -222,8 +238,8 @@ pub struct Writer {
 }
 
 impl Writer {
-    pub fn set_status_mask(&self, mask: u32) -> libddsc_sys::dds_return_t {
-        unsafe { libddsc_sys::dds_set_status_mask(self.entity, mask) }
+    pub fn set_status_mask(&self, mask: DDSStatusId) -> libddsc_sys::dds_return_t {
+        unsafe { libddsc_sys::dds_set_status_mask(self.entity, mask as u32) }
     }
 
     pub fn get_status_changes(&self) -> (libddsc_sys::dds_return_t, u32) {
