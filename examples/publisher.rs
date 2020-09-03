@@ -4,7 +4,7 @@ use std::time::Duration;
 fn main() {
     let participant = Participant::new(0);
     let mut qos = QoS::new();
-    qos.history(&History::KeepAll);
+    qos.history(History::KeepAll);
 
     let mut sertopic: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
     let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
