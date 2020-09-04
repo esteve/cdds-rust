@@ -1,54 +1,7 @@
 use dds::*;
 use std::ffi::CString;
 use std::time::Duration;
-
-#[no_mangle]
-extern "C" fn sertopic_free(sertopic: *mut libddsc_sys::ddsi_sertopic) {
-    libddsc_sys::ddsi_sertopic_fini(sertopic);
-}
-
-#[no_mangle]
-extern "C" fn sertopic_zero_samples(
-    d: *const libddsc_sys::ddsi_sertopic,
-    samples: *mut ::std::os::raw::c_void,
-    count: libddsc_sys::size_t,
-) {
-    // TODO(esteve): implement
-}
-
-#[no_mangle]
-extern "C" fn sertopic_realloc_samples(
-    ptrs: *mut *mut ::std::os::raw::c_void,
-    d: *const libddsc_sys::ddsi_sertopic,
-    old: *mut ::std::os::raw::c_void,
-    oldcount: libddsc_sys::size_t,
-    count: libddsc_sys::size_t,
-) {
-    // TODO(esteve): implement
-}
-
-#[no_mangle]
-extern "C" fn sertopic_free_samples(
-    d: *const libddsc_sys::ddsi_sertopic,
-    ptrs: *mut *mut ::std::os::raw::c_void,
-    count: libddsc_sys::size_t,
-    op: libddsc_sys::dds_free_op_t,
-) {
-    // TODO(esteve): implement
-}
-
-#[no_mangle]
-extern "C" fn sertopic_equal(
-    a: *const libddsc_sys::ddsi_sertopic,
-    b: *const libddsc_sys::ddsi_sertopic,
-) -> bool {
-    false
-}
-
-#[no_mangle]
-extern "C" fn sertopic_hash(tp: *const libddsc_sys::ddsi_sertopic) -> u32 {
-    0
-}
+mod sertopic_mod;
 
 fn main() {
     let participant = Participant::new(DDS_DOMAIN_DEFAULT);
@@ -62,12 +15,12 @@ fn main() {
     let st_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut st;
 
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
-        free: Some(sertopic_free),
-        zero_samples: Some(sertopic_zero_samples),
-        realloc_samples: Some(sertopic_realloc_samples),
-        free_samples: Some(sertopic_free_samples),
-        equal: Some(sertopic_equal),
-        hash: Some(sertopic_hash),
+        free: Some(sertopic_mod::sertopic_free),
+        zero_samples: Some(sertopic_mod::sertopic_zero_samples),
+        realloc_samples: Some(sertopic_mod::sertopic_realloc_samples),
+        free_samples: Some(sertopic_mod::sertopic_free_samples),
+        equal: Some(sertopic_mod::sertopic_equal),
+        hash: Some(sertopic_mod::sertopic_hash),
     };
 
     // let sd_ops: libddsc_sys::ddsi_serdata_ops;
