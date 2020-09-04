@@ -1,16 +1,14 @@
 use dds::Participant;
+use dds::*;
 
 fn main() {
-    let participant = Participant::new(0);
+    let participant = Participant::new(DDS_DOMAIN_DEFAULT);
+    let mut qos = QoS::new();
+    qos.history(History::KeepAll);
 
-    let topic = participant.create_topic();
-
-    let qos = QoS::new();
-    dds_qset_reliability(qos, DDS_RELIABILITY_RELIABLE, DDS_SECS(10));
+    let topic = participant.create_topic_generic(&st, &qos);
 
     let reader = participant.create_reader(topic, qos, std::ptr::null());
-
-    qos.delete();
 
     //   samples[0] = HelloWorldData_Msg__alloc ();
 

@@ -7,4 +7,4 @@ edition = "2018"
 
 [dev-dependencies]
 ddsc = { path = ".." }
-
+libddsc-sys = { path = "../libddsc-sys" }
