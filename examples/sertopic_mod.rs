@@ -2,7 +2,10 @@ use dds::*;
 
 #[no_mangle]
 pub extern "C" fn sertopic_free(sertopic: *mut libddsc_sys::ddsi_sertopic) {
-    libddsc_sys::ddsi_sertopic_fini(sertopic);
+    // TODO(esteve): implement
+    unsafe {
+        libddsc_sys::ddsi_sertopic_fini(sertopic);
+    }
 }
 
 #[no_mangle]
@@ -40,10 +43,12 @@ pub extern "C" fn sertopic_equal(
     a: *const libddsc_sys::ddsi_sertopic,
     b: *const libddsc_sys::ddsi_sertopic,
 ) -> bool {
+    // TODO(esteve): implement
     false
 }
 
 #[no_mangle]
 pub extern "C" fn sertopic_hash(tp: *const libddsc_sys::ddsi_sertopic) -> u32 {
+    // TODO(esteve): implement
     0
 }

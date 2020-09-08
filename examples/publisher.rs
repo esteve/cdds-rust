@@ -1,6 +1,7 @@
 use dds::*;
 use std::ffi::CString;
 use std::time::Duration;
+mod serdata_mod;
 mod sertopic_mod;
 
 fn main() {
@@ -23,11 +24,35 @@ fn main() {
         hash: Some(sertopic_mod::sertopic_hash),
     };
 
-    // let sd_ops: libddsc_sys::ddsi_serdata_ops;
+    let serdata_ops = libddsc_sys::ddsi_serdata_ops {
+        get_size: Some(serdata_mod::serdata_get_size),
+        eqkey: Some(serdata_mod::serdata_eqkey),
+        free: Some(serdata_mod::serdata_free),
+        from_ser: Some(serdata_mod::serdata_from_ser),
+        from_ser_iov: Some(serdata_mod::serdata_from_ser_iov),
+        from_keyhash: Some(serdata_mod::serdata_from_keyhash),
+        from_sample: Some(serdata_mod::serdata_from_sample),
+        to_ser: Some(serdata_mod::serdata_to_ser),
+        to_sample: Some(serdata_mod::serdata_to_sample),
+        to_ser_ref: Some(serdata_mod::serdata_to_ser_ref),
+        to_ser_unref: Some(serdata_mod::serdata_to_ser_unref),
+        to_topicless: Some(serdata_mod::serdata_to_topicless),
+        topicless_to_sample: Some(serdata_mod::serdata_topicless_to_sample),
+        print: Some(serdata_mod::serdata_print),
+    };
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
     let type_name = CString::new("x").unwrap();
-    unsafe { libddsc_sys::ddsi_sertopic_init (st, topic_name.as_ptr(), type_name.as_ptr(), &sertopic_ops, &sd_ops, false); }
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            st,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &sertopic_ops,
+            &serdata_ops,
+            false,
+        );
+    }
 
     // let topic = participant.create_topic_generic(st_ptr, &qos);
 
