@@ -20,7 +20,9 @@ pub extern "C" fn sertopic_zero_samples(
     samples: *mut ::std::os::raw::c_void,
     count: libddsc_sys::size_t,
 ) {
-    unsafe { std::ptr::write_bytes::<sampletype>(samples as *mut sampletype, 0, count as usize); }
+    unsafe {
+        std::ptr::write_bytes::<sampletype>(samples as *mut sampletype, 0, count as usize);
+    }
 }
 
 #[no_mangle]
@@ -31,6 +33,12 @@ pub extern "C" fn sertopic_realloc_samples(
     oldcount: libddsc_sys::size_t,
     count: libddsc_sys::size_t,
 ) {
+    let size: libddsc_sys::size_t = std::mem::size_of::<sampletype>() as libddsc_sys::size_t;
+    let new = if oldcount == count {
+        old
+    } else {
+        unsafe { libddsc_sys::dds_realloc(old, size * count) }
+    };
     // TODO(esteve): implement
 }
 
