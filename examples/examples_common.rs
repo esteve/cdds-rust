@@ -1,5 +1,11 @@
 use dds::*;
 
+#[repr(C)]
+struct sampletype {
+    key: &'static str,
+    value: &'static str,
+}
+
 #[no_mangle]
 pub extern "C" fn sertopic_free(sertopic: *mut libddsc_sys::ddsi_sertopic) {
     // TODO(esteve): implement
@@ -14,7 +20,7 @@ pub extern "C" fn sertopic_zero_samples(
     samples: *mut ::std::os::raw::c_void,
     count: libddsc_sys::size_t,
 ) {
-    unsafe { std::ptr::write_bytes(samples, 0, count as usize); }
+    unsafe { std::ptr::write_bytes::<sampletype>(samples as *mut sampletype, 0, count as usize); }
 }
 
 #[no_mangle]
