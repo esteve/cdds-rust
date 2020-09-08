@@ -14,7 +14,7 @@ pub extern "C" fn sertopic_zero_samples(
     samples: *mut ::std::os::raw::c_void,
     count: libddsc_sys::size_t,
 ) {
-    // TODO(esteve): implement
+    unsafe { std::ptr::write_bytes(samples, 0, count as usize); }
 }
 
 #[no_mangle]
@@ -43,12 +43,10 @@ pub extern "C" fn sertopic_equal(
     a: *const libddsc_sys::ddsi_sertopic,
     b: *const libddsc_sys::ddsi_sertopic,
 ) -> bool {
-    // TODO(esteve): implement
-    false
+    true
 }
 
 #[no_mangle]
 pub extern "C" fn sertopic_hash(tp: *const libddsc_sys::ddsi_sertopic) -> u32 {
-    // TODO(esteve): implement
     0
 }
