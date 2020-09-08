@@ -1,8 +1,7 @@
 use dds::*;
 use std::ffi::CString;
 use std::time::Duration;
-mod serdata_mod;
-mod sertopic_mod;
+mod examples_common;
 
 fn main() {
     let participant = Participant::new(DDS_DOMAIN_DEFAULT);
@@ -13,29 +12,29 @@ fn main() {
     let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
 
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
-        free: Some(sertopic_mod::sertopic_free),
-        zero_samples: Some(sertopic_mod::sertopic_zero_samples),
-        realloc_samples: Some(sertopic_mod::sertopic_realloc_samples),
-        free_samples: Some(sertopic_mod::sertopic_free_samples),
-        equal: Some(sertopic_mod::sertopic_equal),
-        hash: Some(sertopic_mod::sertopic_hash),
+        free: Some(examples_common::sertopic_free),
+        zero_samples: Some(examples_common::sertopic_zero_samples),
+        realloc_samples: Some(examples_common::sertopic_realloc_samples),
+        free_samples: Some(examples_common::sertopic_free_samples),
+        equal: Some(examples_common::sertopic_equal),
+        hash: Some(examples_common::sertopic_hash),
     };
 
     let serdata_ops = libddsc_sys::ddsi_serdata_ops {
-        get_size: Some(serdata_mod::serdata_get_size),
-        eqkey: Some(serdata_mod::serdata_eqkey),
-        free: Some(serdata_mod::serdata_free),
-        from_ser: Some(serdata_mod::serdata_from_ser),
-        from_ser_iov: Some(serdata_mod::serdata_from_ser_iov),
-        from_keyhash: Some(serdata_mod::serdata_from_keyhash),
-        from_sample: Some(serdata_mod::serdata_from_sample),
-        to_ser: Some(serdata_mod::serdata_to_ser),
-        to_sample: Some(serdata_mod::serdata_to_sample),
-        to_ser_ref: Some(serdata_mod::serdata_to_ser_ref),
-        to_ser_unref: Some(serdata_mod::serdata_to_ser_unref),
-        to_topicless: Some(serdata_mod::serdata_to_topicless),
-        topicless_to_sample: Some(serdata_mod::serdata_topicless_to_sample),
-        print: Some(serdata_mod::serdata_print),
+        get_size: Some(examples_common::serdata_get_size),
+        eqkey: Some(examples_common::serdata_eqkey),
+        free: Some(examples_common::serdata_free),
+        from_ser: Some(examples_common::serdata_from_ser),
+        from_ser_iov: Some(examples_common::serdata_from_ser_iov),
+        from_keyhash: Some(examples_common::serdata_from_keyhash),
+        from_sample: Some(examples_common::serdata_from_sample),
+        to_ser: Some(examples_common::serdata_to_ser),
+        to_sample: Some(examples_common::serdata_to_sample),
+        to_ser_ref: Some(examples_common::serdata_to_ser_ref),
+        to_ser_unref: Some(examples_common::serdata_to_ser_unref),
+        to_topicless: Some(examples_common::serdata_to_topicless),
+        topicless_to_sample: Some(examples_common::serdata_topicless_to_sample),
+        print: Some(examples_common::serdata_print),
     };
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();

@@ -51,8 +51,6 @@ pub extern "C" fn sertopic_hash(tp: *const libddsc_sys::ddsi_sertopic) -> u32 {
     0
 }
 
-use dds::*;
-
 #[no_mangle]
 pub extern "C" fn serdata_get_size(d: *const libddsc_sys::ddsi_serdata) -> u32 {
     // TODO(esteve): implement
