@@ -12,9 +12,6 @@ fn main() {
     let mut sertopic: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
     let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
 
-    let mut st: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
-    let st_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut st;
-
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
         free: Some(sertopic_mod::sertopic_free),
         zero_samples: Some(sertopic_mod::sertopic_zero_samples),
@@ -45,7 +42,7 @@ fn main() {
     let type_name = CString::new("x").unwrap();
     unsafe {
         libddsc_sys::ddsi_sertopic_init(
-            st,
+            sertopic,
             topic_name.as_ptr(),
             type_name.as_ptr(),
             &sertopic_ops,
@@ -54,29 +51,15 @@ fn main() {
         );
     }
 
-    // let topic = participant.create_topic_generic(st_ptr, &qos);
+    let topic = participant.create_topic_generic(sertopic_ptr, &qos);
 
-    // let writer: Writer = participant.create_writer(&topic, &qos);
+    let writer: Writer = participant.create_writer(&topic, &qos);
 
-    // writer.set_status_mask(DDSStatusId::PublicationMatched);
+    writer.set_status_mask(DDSStatusId::PublicationMatched);
 
-    // let status: u32 = 0;
-    // while 0 != (status & DDSStatusId::PublicationMatched as u32) {
-    //     let (rc, status) = writer.get_status_changes();
-    //     sleep_for(Duration::from_millis(20));
-    // }
-
-    // // regular write (from_sample(DATA) + to_topicless)
-    // struct sampletype xs[] = {
-    //     { .key = "aap", .value = "banaan" },
-    //     { .key = "kolibrie", .value = "nectar" }
-    // };
-    // for (int j = 0; j < 2; j++)
-    // {
-    //     for (size_t i = 0; i < sizeof (xs) / sizeof (xs[0]); i++)
-    //     {
-    //     rc = writer.write_cdr();
-    //     CU_ASSERT_FATAL (rc == 0);
-    //     }
-    // }
+    let status: u32 = 0;
+    while 0 != (status & DDSStatusId::PublicationMatched as u32) {
+        let (rc, status) = writer.get_status_changes();
+        sleep_for(Duration::from_millis(20));
+    }
 }
