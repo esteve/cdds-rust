@@ -58,9 +58,18 @@ fn main() {
 
     writer.set_status_mask(DDSStatusId::PublicationMatched);
 
-    let status: u32 = 0;
-    while 0 != (status & DDSStatusId::PublicationMatched as u32) {
-        let (rc, status) = writer.get_status_changes();
-        sleep_for(Duration::from_millis(20));
+    loop {
+        println!("Writing CDR");
+        let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+        let serdata_ptr = unsafe { alloc(layout) as *mut libddsc_sys::ddsi_serdata };
+        unsafe {
+            libddsc_sys::ddsi_serdata_init(
+                serdata_ptr,
+                sertopic_ptr,
+                libddsc_sys::ddsi_serdata_kind_SDK_DATA,
+            );
+        };
+        let rc = writer.write_cdr(serdata_ptr);
+        sleep_for(Duration::from_millis(200));
     }
 }
