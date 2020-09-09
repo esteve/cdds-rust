@@ -197,3 +197,48 @@ pub extern "C" fn serdata_print(
     // TODO(esteve): implement
     0
 }
+
+pub struct SertopicExample {
+    pub sertopic_ptr: *mut libddsc_sys::ddsi_sertopic,
+}
+
+impl Sertopic for SertopicExample {
+    fn get_sertopic_ptr(&self) -> *mut libddsc_sys::ddsi_sertopic {
+        self.sertopic_ptr
+    }
+
+    fn free(&self) {
+        sertopic_free(self.get_sertopic_ptr())
+    }
+
+    fn zero_samples(&self, samples: *mut ::std::os::raw::c_void, count: libddsc_sys::size_t) {
+        sertopic_zero_samples(self.get_sertopic_ptr(), samples, count)
+    }
+
+    fn realloc_samples(
+        &self,
+        ptrs: *mut *mut ::std::os::raw::c_void,
+        old: *mut ::std::os::raw::c_void,
+        oldcount: libddsc_sys::size_t,
+        count: libddsc_sys::size_t,
+    ) {
+        sertopic_realloc_samples(ptrs, self.get_sertopic_ptr(), old, oldcount, count)
+    }
+
+    fn free_samples(
+        &self,
+        ptrs: *mut *mut ::std::os::raw::c_void,
+        count: libddsc_sys::size_t,
+        op: libddsc_sys::dds_free_op_t,
+    ) {
+        sertopic_free_samples(self.get_sertopic_ptr(), ptrs, count, op)
+    }
+
+    fn equal(&self, b: *const libddsc_sys::ddsi_sertopic) -> bool {
+        sertopic_equal(self.get_sertopic_ptr(), b)
+    }
+
+    fn hash(&self) -> u32 {
+        sertopic_hash(self.get_sertopic_ptr())
+    }
+}

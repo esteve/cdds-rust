@@ -7,6 +7,33 @@ extern crate libddsc_sys;
 
 pub const DDS_DOMAIN_DEFAULT: u32 = 0xffffffffu32;
 
+pub trait Sertopic {
+    fn get_sertopic_ptr(&self) -> *mut libddsc_sys::ddsi_sertopic;
+
+    fn free(&self);
+
+    fn zero_samples(&self, samples: *mut ::std::os::raw::c_void, count: libddsc_sys::size_t);
+
+    fn realloc_samples(
+        &self,
+        ptrs: *mut *mut ::std::os::raw::c_void,
+        old: *mut ::std::os::raw::c_void,
+        oldcount: libddsc_sys::size_t,
+        count: libddsc_sys::size_t,
+    );
+
+    fn free_samples(
+        &self,
+        ptrs: *mut *mut ::std::os::raw::c_void,
+        count: libddsc_sys::size_t,
+        op: libddsc_sys::dds_free_op_t,
+    );
+
+    fn equal(&self, b: *const libddsc_sys::ddsi_sertopic) -> bool;
+
+    fn hash(&self) -> u32;
+}
+
 pub enum History {
     KeepLast { n: u32 },
     KeepAll,

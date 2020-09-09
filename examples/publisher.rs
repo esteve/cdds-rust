@@ -11,6 +11,11 @@ fn main() {
     let mut sertopic: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
     let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
 
+    let se = examples_common::SertopicExample {sertopic_ptr: sertopic};
+
+    let f = |sertopic: *mut libddsc_sys::ddsi_sertopic| { se.free() };
+
+    let f1 : extern "C" fn(*mut libddsc_sys::ddsi_sertopic) = f;
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
         free: Some(examples_common::sertopic_free),
         zero_samples: Some(examples_common::sertopic_zero_samples),
