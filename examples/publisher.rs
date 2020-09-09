@@ -2,20 +2,16 @@ use dds::*;
 use std::ffi::CString;
 use std::time::Duration;
 mod examples_common;
+use std::alloc::{alloc, dealloc, Layout};
 
 fn main() {
     let participant = Participant::new(DDS_DOMAIN_DEFAULT);
     let mut qos = QoS::new();
     qos.history(History::KeepAll);
 
-    let mut sertopic: *mut libddsc_sys::ddsi_sertopic = std::ptr::null_mut();
-    let sertopic_ptr: *mut *mut libddsc_sys::ddsi_sertopic = &mut sertopic;
+    let layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr = unsafe { alloc(layout) as *mut libddsc_sys::ddsi_sertopic };
 
-    let se = examples_common::SertopicExample {sertopic_ptr: sertopic};
-
-    let f = |sertopic: *mut libddsc_sys::ddsi_sertopic| { se.free() };
-
-    let f1 : extern "C" fn(*mut libddsc_sys::ddsi_sertopic) = f;
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
         free: Some(examples_common::sertopic_free),
         zero_samples: Some(examples_common::sertopic_zero_samples),
@@ -44,9 +40,10 @@ fn main() {
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
     let type_name = CString::new("x").unwrap();
+
     unsafe {
         libddsc_sys::ddsi_sertopic_init(
-            sertopic,
+            sertopic_ptr,
             topic_name.as_ptr(),
             type_name.as_ptr(),
             &sertopic_ops,
@@ -55,7 +52,7 @@ fn main() {
         );
     }
 
-    let topic = participant.create_topic_generic(sertopic_ptr, &qos);
+    let topic = participant.create_topic_generic(&mut sertopic_ptr, &qos);
 
     let writer: Writer = participant.create_writer(&topic, &qos);
 
