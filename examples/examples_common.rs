@@ -1,4 +1,5 @@
 use dds::*;
+use std::alloc::{alloc, Layout};
 
 #[repr(C)]
 struct sampletype {
@@ -84,7 +85,9 @@ pub extern "C" fn serdata_from_ser(
     size: libddsc_sys::size_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]
@@ -96,7 +99,9 @@ pub extern "C" fn serdata_from_ser_iov(
     size: libddsc_sys::size_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]
@@ -105,7 +110,9 @@ pub extern "C" fn serdata_from_keyhash(
     keyhash: *const libddsc_sys::nn_keyhash,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]
@@ -115,7 +122,9 @@ pub extern "C" fn serdata_from_sample(
     sample: *const ::std::os::raw::c_void,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]
@@ -123,7 +132,9 @@ pub extern "C" fn serdata_to_topicless(
     d: *const libddsc_sys::ddsi_serdata,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]
@@ -144,7 +155,9 @@ pub extern "C" fn serdata_to_ser_ref(
     ref_: *mut libddsc_sys::ddsrt_iovec_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
-    std::ptr::null_mut()
+    let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
+    let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+    serdata_ptr
 }
 
 #[no_mangle]

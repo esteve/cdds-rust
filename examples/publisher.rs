@@ -2,15 +2,15 @@ use dds::*;
 use std::ffi::CString;
 use std::time::Duration;
 mod examples_common;
-use std::alloc::{alloc, dealloc, Layout};
+use std::alloc::{alloc, Layout};
 
 fn main() {
     let participant = Participant::new(DDS_DOMAIN_DEFAULT);
     let mut qos = QoS::new();
     qos.history(History::KeepAll);
 
-    let layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr = unsafe { alloc(layout) as *mut libddsc_sys::ddsi_sertopic };
+    let sertopic_layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr = unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
         free: Some(examples_common::sertopic_free),
@@ -61,7 +61,7 @@ fn main() {
     loop {
         println!("Writing CDR");
         let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
-        let serdata_ptr = unsafe { alloc(layout) as *mut libddsc_sys::ddsi_serdata };
+        let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
         unsafe {
             libddsc_sys::ddsi_serdata_init(
                 serdata_ptr,
