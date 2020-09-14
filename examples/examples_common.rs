@@ -29,9 +29,9 @@ pub static SERDATA_OPS: libddsc_sys::ddsi_serdata_ops = libddsc_sys::ddsi_serdat
 };
 
 #[repr(C)]
-struct sampletype {
-    key: &'static str,
-    value: &'static str,
+pub struct SampleType {
+    pub key: &'static str,
+    pub value: &'static str,
 }
 
 #[no_mangle]
@@ -49,7 +49,7 @@ pub extern "C" fn sertopic_zero_samples(
     count: libddsc_sys::size_t,
 ) {
     unsafe {
-        std::ptr::write_bytes::<sampletype>(samples as *mut sampletype, 0, count as usize);
+        std::ptr::write_bytes::<SampleType>(samples as *mut SampleType, 0, count as usize);
     }
 }
 
@@ -61,13 +61,26 @@ pub extern "C" fn sertopic_realloc_samples(
     oldcount: libddsc_sys::size_t,
     count: libddsc_sys::size_t,
 ) {
-    let size: libddsc_sys::size_t = std::mem::size_of::<sampletype>() as libddsc_sys::size_t;
+    let size: libddsc_sys::size_t = std::mem::size_of::<SampleType>() as libddsc_sys::size_t;
     let new = if oldcount == count {
         old
     } else {
         unsafe { libddsc_sys::dds_realloc(old, size * count) }
     };
-    // TODO(esteve): implement
+
+    if (!new.is_null() && count > oldcount)
+    {
+        unsafe {
+            std::ptr::write_bytes(new.offset((size * oldcount) as isize), 0, (count - oldcount) as usize);
+        }        
+    }
+
+    for i in 0..count
+    {
+      unsafe {
+          *ptrs.offset(i as isize) = new.offset((i + size) as isize);
+      }
+    }
 }
 
 #[no_mangle]
@@ -113,7 +126,7 @@ pub extern "C" fn serdata_from_ser(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
@@ -153,7 +166,7 @@ pub extern "C" fn serdata_from_ser_iov(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
@@ -190,7 +203,7 @@ pub extern "C" fn serdata_from_keyhash(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
@@ -228,7 +241,7 @@ pub extern "C" fn serdata_from_sample(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
@@ -264,7 +277,7 @@ pub extern "C" fn serdata_to_topicless(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();
@@ -313,7 +326,7 @@ pub extern "C" fn serdata_to_ser_ref(
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
-    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+    let sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
         unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
 
     let topic_name = CString::new("ddsc_cdr_basic").unwrap();

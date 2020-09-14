@@ -309,6 +309,10 @@ impl Writer {
     pub fn write_cdr(&self, cdr: *mut libddsc_sys::ddsi_serdata) -> libddsc_sys::dds_return_t {
         unsafe { libddsc_sys::dds_writecdr(self.entity, cdr) }
     }
+
+    pub fn write(&self, data: *const ::std::os::raw::c_void) -> libddsc_sys::dds_return_t {
+        unsafe { libddsc_sys::dds_write(self.entity, data) }
+    }
 }
 
 pub struct Topic {

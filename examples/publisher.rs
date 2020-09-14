@@ -9,7 +9,7 @@ fn main() {
     let mut qos = QoS::new();
     qos.history(History::KeepAll);
 
-    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let topic_name = CString::new("ddsc_cdr_basic1_pid1_tid1").unwrap();
     let type_name = CString::new("x").unwrap();
 
     let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
@@ -31,7 +31,10 @@ fn main() {
 
     let writer: Writer = participant.create_writer(&topic, &qos);
 
-    writer.set_status_mask(DDSStatusId::PublicationMatched);
+    let xs = vec![
+        examples_common::SampleType { key: "aap", value: "banaan"},
+        examples_common::SampleType { key: "aap", value: "banaan"},
+    ];
 
     loop {
         println!("Writing CDR");
@@ -44,7 +47,7 @@ fn main() {
                 libddsc_sys::ddsi_serdata_kind_SDK_KEY,
             );
         };
-        let rc = writer.write_cdr(serdata_ptr);
+        let rc = writer.write(serdata_ptr as *const ::std::os::raw::c_void);
         sleep_for(Duration::from_millis(200));
     }
 }
