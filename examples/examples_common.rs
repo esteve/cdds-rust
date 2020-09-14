@@ -1,5 +1,32 @@
 use dds::*;
 use std::alloc::{alloc, Layout};
+use std::ffi::CString;
+
+pub static SERTOPIC_OPS: libddsc_sys::ddsi_sertopic_ops = libddsc_sys::ddsi_sertopic_ops {
+    free: Some(sertopic_free),
+    zero_samples: Some(sertopic_zero_samples),
+    realloc_samples: Some(sertopic_realloc_samples),
+    free_samples: Some(sertopic_free_samples),
+    equal: Some(sertopic_equal),
+    hash: Some(sertopic_hash),
+};
+
+pub static SERDATA_OPS: libddsc_sys::ddsi_serdata_ops = libddsc_sys::ddsi_serdata_ops {
+    get_size: Some(serdata_get_size),
+    eqkey: Some(serdata_eqkey),
+    free: Some(serdata_free),
+    from_ser: Some(serdata_from_ser),
+    from_ser_iov: Some(serdata_from_ser_iov),
+    from_keyhash: Some(serdata_from_keyhash),
+    from_sample: Some(serdata_from_sample),
+    to_ser: Some(serdata_to_ser),
+    to_sample: Some(serdata_to_sample),
+    to_ser_ref: Some(serdata_to_ser_ref),
+    to_ser_unref: Some(serdata_to_ser_unref),
+    to_topicless: Some(serdata_to_topicless),
+    topicless_to_sample: Some(serdata_topicless_to_sample),
+    print: Some(serdata_print),
+};
 
 #[repr(C)]
 struct sampletype {
@@ -85,8 +112,34 @@ pub extern "C" fn serdata_from_ser(
     size: libddsc_sys::size_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
@@ -99,8 +152,34 @@ pub extern "C" fn serdata_from_ser_iov(
     size: libddsc_sys::size_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
@@ -110,8 +189,34 @@ pub extern "C" fn serdata_from_keyhash(
     keyhash: *const libddsc_sys::nn_keyhash,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
@@ -122,8 +227,34 @@ pub extern "C" fn serdata_from_sample(
     sample: *const ::std::os::raw::c_void,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
@@ -132,8 +263,34 @@ pub extern "C" fn serdata_to_topicless(
     d: *const libddsc_sys::ddsi_serdata,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
@@ -155,8 +312,34 @@ pub extern "C" fn serdata_to_ser_ref(
     ref_: *mut libddsc_sys::ddsrt_iovec_t,
 ) -> *mut libddsc_sys::ddsi_serdata {
     // TODO(esteve): implement
+    let sertopic_layout: std::alloc::Layout = Layout::new::<libddsc_sys::ddsi_sertopic>();
+    let mut sertopic_ptr: *mut libddsc_sys::ddsi_sertopic =
+        unsafe { alloc(sertopic_layout) } as *mut libddsc_sys::ddsi_sertopic;
+
+    let topic_name = CString::new("ddsc_cdr_basic").unwrap();
+    let type_name = CString::new("x").unwrap();
+
+    unsafe {
+        libddsc_sys::ddsi_sertopic_init(
+            sertopic_ptr,
+            topic_name.as_ptr(),
+            type_name.as_ptr(),
+            &SERTOPIC_OPS,
+            &SERDATA_OPS,
+            false,
+        );
+    }
+
     let serdata_layout = Layout::new::<libddsc_sys::ddsi_serdata>();
     let serdata_ptr = unsafe { alloc(serdata_layout) } as *mut libddsc_sys::ddsi_serdata;
+
+    unsafe {
+        libddsc_sys::ddsi_serdata_init(
+            serdata_ptr,
+            sertopic_ptr,
+            libddsc_sys::ddsi_serdata_kind_SDK_KEY,
+        );
+    };
     serdata_ptr
 }
 
