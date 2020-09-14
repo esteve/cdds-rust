@@ -380,7 +380,7 @@ pub extern "C" fn serdata_eqkey(
     b: *const libddsc_sys::ddsi_serdata,
 ) -> bool {
     // TODO(esteve): implement
-    false
+    true
 }
 
 #[no_mangle]
